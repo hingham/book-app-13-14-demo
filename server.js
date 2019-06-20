@@ -82,7 +82,10 @@ function getBook(request, response) {
     .then(shelves => {
       let SQL = `SELECT * FROM books WHERE id=${request.params.id};`;
       client.query(SQL)
-        .then(result => response.render('pages/books/show', { book: result.rows[0], bookshelves: shelves.rows }))
+        .then(result => response.render('pages/books/show', { 
+          book: result.rows[0], 
+          bookshelves: shelves.rows }))
+
         .catch(err => handleError(err, response));
     })
 }
@@ -94,8 +97,10 @@ function getBookshelves() {
 
 function createBook(request, response) {
   let normalizedShelf = request.body.bookshelf.toLowerCase();
+  console.log('the request body ', request.body);
 
   let { title, author, isbn, image_url, description } = request.body;
+  // let title = request.body.title;
   let SQL = 'INSERT INTO books(title, author, isbn, image_url, description, bookshelf) VALUES($1, $2, $3, $4, $5, $6) RETURNING id;';
   let values = [title, author, isbn, image_url, description, normalizedShelf];
 
@@ -103,6 +108,9 @@ function createBook(request, response) {
     .then(result => response.redirect(`/books/${result.rows[0].id}`))
     .catch(err => handleError(err, response));
 }
+
+
+
 
 function updateBook(request, response) {
   let { title, author, isbn, image_url, description, bookshelf } = request.body;

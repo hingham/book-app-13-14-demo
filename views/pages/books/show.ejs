@@ -10,7 +10,7 @@
       <%- include('detail', {book: book}) %>
 
 
-      <form id="update-form" action="/books/<%= book.id%>" method="PUT">
+      <form id="update-form" action="/books/<%= book.id%>" method="POST">
         <input type="hidden" name="_method" value="put">
         <input type="text" name="title" value="<%= book.title %>" required>
         <input type="text" name="author" value="<%= book.author %>" required>
