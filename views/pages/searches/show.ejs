@@ -12,9 +12,20 @@
       <ul id="book-list" class="search-results">
         <% results.forEach(book => { %>
           <li data-book-id="<%= book.isbn %>">
+            
             <%- include('../books/detail', {book: book}) %>
             <button class="select-button">Select This Book</button>
-            <%- include('../books/edit', {book: book, bookshelves: null, formAction: 'create'}) %>
+            <form id="create" class="dont-hide-me" action="/books/" method="POST">
+              <input type="hidden" name="_method" value=POST>
+              <input type="text" name="title" value="<%= book.title %>" required>
+              <input type="text" name="author" value="<%= book.author %>" required>
+              <input type="text" name="isbn" value="<%= book.isbn %>">
+              <input type="text" name="image_url" value="<%= book.image_url %>">
+              <textarea name="description" cols="30" rows="5"><%= book.description %></textarea>        
+              <input type="text" name="bookshelf" placeholder="Enter a bookshelf name" required>
+
+              <button class="show-me" type="submit">Save Book</button>
+            </form>
           </li>
         <% }) %>
       </ul>

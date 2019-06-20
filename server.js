@@ -47,20 +47,9 @@ app.get('*', (request, response) => response.status(404).send('This route does n
 app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
 
 // HELPER FUNCTIONS
-function Book(info) {
-  const placeholderImage = 'https://i.imgur.com/J5LVHEL.jpg';
-
-  this.title = info.title ? info.title : 'No title available';
-  this.author = info.authors ? info.authors[0] : 'No author available';
-  this.isbn = info.industryIdentifiers ? `ISBN_13 ${info.industryIdentifiers[0].identifier}` : 'No ISBN available';
-  this.image_url = info.imageLinks ? info.imageLinks.smallThumbnail : placeholderImage;
-  this.description = info.description ? info.description : 'No description available';
-  this.id = info.industryIdentifiers ? `${info.industryIdentifiers[0].identifier}` : '';
-}
 
 function getBooks(request, response) {
   let SQL = 'SELECT * FROM books;';
-
   return client.query(SQL)
     .then(results => {
       if (results.rows.rowCount === 0) {
@@ -91,9 +80,8 @@ function newSearch(request, response) {
 function getBook(request, response) {
   getBookshelves()
     .then(shelves => {
-      let SQL = 'SELECT * FROM books WHERE id=$1;';
-      let values = [request.params.id];
-      client.query(SQL, values)
+      let SQL = `SELECT * FROM books WHERE id=${request.params.id};`;
+      client.query(SQL)
         .then(result => response.render('pages/books/show', { book: result.rows[0], bookshelves: shelves.rows }))
         .catch(err => handleError(err, response));
     })
@@ -101,7 +89,6 @@ function getBook(request, response) {
 
 function getBookshelves() {
   let SQL = 'SELECT DISTINCT bookshelf FROM books ORDER BY bookshelf;';
-
   return client.query(SQL);
 }
 
@@ -138,4 +125,15 @@ function deleteBook(request, response) {
 
 function handleError(error, response) {
   response.render('pages/error', { error: error });
+}
+
+function Book(info) {
+  const placeholderImage = 'https://i.imgur.com/J5LVHEL.jpg';
+
+  this.title = info.title ? info.title : 'No title available';
+  this.author = info.authors ? info.authors[0] : 'No author available';
+  this.isbn = info.industryIdentifiers ? `ISBN_13 ${info.industryIdentifiers[0].identifier}` : 'No ISBN available';
+  this.image_url = info.imageLinks ? info.imageLinks.smallThumbnail : placeholderImage;
+  this.description = info.description ? info.description : 'No description available';
+  this.id = info.industryIdentifiers ? `${info.industryIdentifiers[0].identifier}` : '';
 }
